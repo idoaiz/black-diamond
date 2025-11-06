@@ -8,7 +8,7 @@ pub fn setup(mut commands: Commands) {
     }
 
     for y in 0..=MAP_HEIGHT {
-        let y_pos = (MAP_HEIGHT as f32 - y as f32 / 2.0) * TILE_SIZE as f32;
+        let y_pos = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE as f32;
         commands.spawn((horizontal_gridline(), Transform::from_xyz(0.0, y_pos, 1.0)));
     }
 }
@@ -16,7 +16,7 @@ pub fn setup(mut commands: Commands) {
 fn vertical_gridline() -> Sprite {
     Sprite {
         color: Color::srgba(1., 1., 1., 0.3),
-        custom_size: Some(Vec2::new(1., MAP_HEIGHT as f32)),
+        custom_size: Some(Vec2::new(1., (MAP_HEIGHT as u32 * TILE_SIZE) as f32)),
         ..default()
     }
 }
@@ -24,7 +24,7 @@ fn vertical_gridline() -> Sprite {
 fn horizontal_gridline() -> Sprite {
     Sprite {
         color: Color::srgba(1., 1., 1., 0.3),
-        custom_size: Some(Vec2::new(MAP_WIDTH as f32, 1.)),
+        custom_size: Some(Vec2::new((MAP_WIDTH as u32 * TILE_SIZE) as f32, 1.)),
         ..default()
     }
 }

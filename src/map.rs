@@ -21,8 +21,6 @@ fn generate_map() -> Vec<Vec<TileType>> {
         map[y][MAP_WIDTH - 1] = TileType::Dirt;
     }
 
-    info!("{:?}", get_tile_indices(319., 320. - 64.1));
-
     map
 }
 

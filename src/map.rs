@@ -21,6 +21,8 @@ fn generate_map() -> Vec<Vec<TileType>> {
         map[y][MAP_WIDTH - 1] = TileType::Dirt;
     }
 
+    info!("{:?}", get_tile_indices(319., 320. - 64.1));
+
     map
 }
 
@@ -33,8 +35,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             let texture_path = get_texture(*tile_type);
 
             // Calculate position (centered on screen)
-            let x_pos = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE as f32;
-            let y_pos = (MAP_HEIGHT as f32 / 2.0 - y as f32) * TILE_SIZE as f32;
+            let x_pos = (x as f32 - (MAP_WIDTH - 1) as f32 / 2.0) * TILE_SIZE as f32;
+            let y_pos = (y as f32 - (MAP_HEIGHT - 1) as f32 / 2.0) * TILE_SIZE as f32;
 
             commands.spawn((
                 Sprite::from_image(asset_server.load(texture_path)),
@@ -49,4 +51,38 @@ fn get_texture(tile_type: TileType) -> &'static str {
         TileType::Grass => "tiles/grass.png",
         TileType::Dirt => "tiles/dirt.png",
     }
+}
+
+pub fn get_tile_indices(x: f32, y: f32) -> Option<(usize, usize)> {
+    let col = ((x / TILE_SIZE as f32) + (MAP_WIDTH as f32 / 2.0)).floor() as isize;
+    let row = ((y / TILE_SIZE as f32) + (MAP_HEIGHT as f32 / 2.0)).floor() as isize;
+
+    if col < 0 || col >= MAP_WIDTH as isize || row < 0 || row >= MAP_HEIGHT as isize {
+        None
+    } else {
+        Some((col as usize, row as usize))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_center_tile() {
+        let center_tile = (MAP_WIDTH / 2, MAP_HEIGHT / 2);
+        assert_eq!(get_tile_indices(0.,0.), Some(center_tile));
+    }
+
+    #[test]
+    fn test_negative_position() {
+        let bottom_left = (
+            -(MAP_WIDTH as f32 * TILE_SIZE as f32) / 2.,
+            -(MAP_HEIGHT as f32 * TILE_SIZE as f32) / 2.,
+        );
+        assert_eq!(get_tile_indices(bottom_left.0, bottom_left.1), Some((0, 0)));
+    }
+
+    // TODO: test out of bounds
+
 }

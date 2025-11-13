@@ -11,3 +11,5 @@ opt-level = 3
 
 [dependencies]
 bevy = { version = "0.17", features = ["dynamic_linking"] }
+serde = "1.0.228"
+toml = "0.9.8"

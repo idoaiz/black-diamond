@@ -1,5 +1,21 @@
-use super::consts::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE};
 use bevy::prelude::*;
+use serde::Deserialize;
+use std::fs;
+
+#[derive(Resource, Deserialize, Debug, Clone)]
+pub struct MapConfig {
+    pub width: u32,
+    pub height: u32,
+    pub tile_size: u32,
+}
+
+impl MapConfig {
+    pub fn load() -> Self {
+        let contents =
+            fs::read_to_string("assets/map/config.toml").expect("Failed reading map config file");
+        toml::from_str(&contents).expect("Failed parsing map config file")
+    }
+}
 
 // Tile types
 #[derive(Clone, Copy, PartialEq)]
@@ -8,37 +24,49 @@ enum TileType {
     Dirt,
 }
 
-fn generate_map() -> Vec<Vec<TileType>> {
-    let mut map = vec![vec![TileType::Grass; MAP_WIDTH]; MAP_HEIGHT];
+fn generate_map(rows: usize, cols: usize) -> Vec<Vec<TileType>> {
+    let mut map = vec![vec![TileType::Grass; rows]; cols];
 
     // Add dirt border
-    for x in 0..MAP_WIDTH {
+    for x in 0..rows {
         map[0][x] = TileType::Dirt;
-        map[MAP_HEIGHT - 1][x] = TileType::Dirt;
+        map[cols - 1][x] = TileType::Dirt;
     }
-    for y in 0..MAP_HEIGHT {
+    for y in 0..cols {
         map[y][0] = TileType::Dirt;
-        map[y][MAP_WIDTH - 1] = TileType::Dirt;
+        map[y][rows - 1] = TileType::Dirt;
     }
 
     map
 }
 
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let map = generate_map();
+    let map_config = MapConfig::load();
+    commands.insert_resource(map_config.clone());
+
+    let (width, height, tile_size) = (
+        map_config.width as f32,
+        map_config.height as f32,
+        map_config.tile_size as f32,
+    );
+    let map = generate_map(
+        (width / tile_size).ceil() as usize,
+        (height / tile_size).ceil() as usize,
+    );
 
     // Spawn tiles
     for (y, row) in map.iter().enumerate() {
         for (x, tile_type) in row.iter().enumerate() {
             let texture_path = get_texture(*tile_type);
 
-            // Calculate position (centered on screen)
-            let x_pos = (x as f32 - (MAP_WIDTH - 1) as f32 / 2.0) * TILE_SIZE as f32;
-            let y_pos = (y as f32 - (MAP_HEIGHT - 1) as f32 / 2.0) * TILE_SIZE as f32;
+            // Calculate the tile starting coordinate (bottom-left)
+            let x_pos = (x as f32) * tile_size - width / 2.0;
+            let y_pos = (y as f32) * tile_size - height / 2.0;
 
             commands.spawn((
                 Sprite::from_image(asset_server.load(texture_path)),
-                Transform::from_xyz(x_pos, y_pos, 0.0),
+                // Define the transform as the center of the tile, so the bottom left is (x_pos, y_pos)
+                Transform::from_xyz(x_pos + tile_size / 2.0, y_pos + tile_size / 2.0, 0.0),
             ));
         }
     }
@@ -46,41 +74,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn get_texture(tile_type: TileType) -> &'static str {
     match tile_type {
-        TileType::Grass => "tiles/grass.png",
-        TileType::Dirt => "tiles/dirt.png",
+        TileType::Grass => "map/grass.png",
+        TileType::Dirt => "map/dirt.png",
     }
-}
-
-pub fn get_tile_indices(x: f32, y: f32) -> Option<(usize, usize)> {
-    let col = ((x / TILE_SIZE as f32) + (MAP_WIDTH as f32 / 2.0)).floor() as isize;
-    let row = ((y / TILE_SIZE as f32) + (MAP_HEIGHT as f32 / 2.0)).floor() as isize;
-
-    if col < 0 || col >= MAP_WIDTH as isize || row < 0 || row >= MAP_HEIGHT as isize {
-        None
-    } else {
-        Some((col as usize, row as usize))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_center_tile() {
-        let center_tile = (MAP_WIDTH / 2, MAP_HEIGHT / 2);
-        assert_eq!(get_tile_indices(0.,0.), Some(center_tile));
-    }
-
-    #[test]
-    fn test_negative_position() {
-        let bottom_left = (
-            -(MAP_WIDTH as f32 * TILE_SIZE as f32) / 2.,
-            -(MAP_HEIGHT as f32 * TILE_SIZE as f32) / 2.,
-        );
-        assert_eq!(get_tile_indices(bottom_left.0, bottom_left.1), Some((0, 0)));
-    }
-
-    // TODO: test out of bounds
-
 }

@@ -1,4 +1,3 @@
-use crate::map::MapConfig;
 use bevy::prelude::*;
 
 const GRID_SPACING_X: u32 = 64;

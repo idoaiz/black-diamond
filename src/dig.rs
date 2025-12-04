@@ -15,8 +15,8 @@ impl DigCooldown {
     }
 }
 
-// Update the dig cooldown for all entities that currently have it.
-// When cooldown ends, remove the component from the entity.
+/// Update the dig cooldown for all entities that currently have it.
+/// When cooldown ends, remove the component from the entity.
 pub fn dig_cooldown(
     time: Res<Time>,
     mut commands: Commands,
@@ -30,13 +30,13 @@ pub fn dig_cooldown(
     }
 }
 
-// A system to catch dig actions by player and execute them
+/// A system to catch dig actions by player and execute them
 pub fn dig(
     keyboard: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
     player_config: Res<PlayerConfig>,
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Transform, Option<&DigCooldown>), With<Player>>,
+    query: Query<(Entity, &mut Transform, Option<&DigCooldown>), With<Player>>,
 ) {
     let (entity, transform, cooldown) = query.single().unwrap();
 

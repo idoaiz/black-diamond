@@ -1,6 +1,5 @@
 mod black_diamond;
 mod components;
-mod effects;
 mod grid;
 mod map;
 mod player;

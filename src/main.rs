@@ -3,6 +3,7 @@ mod map;
 mod player;
 mod components;
 mod systems;
+mod black_diamond;
 
 use bevy::prelude::*;
 
@@ -12,6 +13,10 @@ fn main() {
         .add_systems(
             Startup,
             (camera_setup, map::setup, player::setup, grid::setup),
+        )
+        .add_systems(
+            Startup,
+            black_diamond::setup.after(map::setup)
         )
         .add_systems(
             Update,

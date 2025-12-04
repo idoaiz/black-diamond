@@ -6,6 +6,7 @@ use std::fs;
 #[derive(Resource, TypePath, Deserialize, Debug, Clone)]
 pub struct PlayerConfig {
     pub speed: f32,
+    pub dig_cooldown: f32,
 }
 
 impl PlayerConfig {
@@ -29,7 +30,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Bounded::default(),
         Sprite {
             image: asset_server.load("player/player_standing.png"),
-            custom_size: Some(Vec2::new(64.,64.)),
+            custom_size: Some(Vec2::new(64., 64.)),
             ..default()
         },
         Transform::from_xyz(0.0, 0.0, 1.0),

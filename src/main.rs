@@ -1,32 +1,47 @@
-mod black_diamond;
 mod components;
+mod diamond;
+mod dig;
+#[cfg(feature = "debug-grid")]
 mod grid;
 mod map;
 mod player;
 mod systems;
-mod dig;
 
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .add_systems(
-            Startup,
-            (camera_setup, map::setup, player::setup, grid::setup),
-        )
-        .add_systems(Startup, black_diamond::setup.after(map::setup))
-        .add_systems(
-            Update,
-            (
-                player::move_player,
-                dig::dig,
-                dig::dig_cooldown,
-                systems::clamp::clamp.after(player::move_player),
-                systems::fade_out::fade_out,
-            ),
-        )
-        .run();
+    let mut app = App::new();
+
+    // Plugins
+    app.add_plugins(DefaultPlugins);
+
+    // Startup systems
+    app.add_systems(
+        Startup,
+        (
+            camera_setup,
+            map::setup,
+            player::setup,
+            diamond::setup.after(map::setup),
+        ),
+    );
+
+    #[cfg(feature = "debug-grid")]
+    app.add_systems(Startup, grid::setup);
+
+    // Update systems
+    app.add_systems(
+        Update,
+        (
+            player::move_player,
+            dig::dig,
+            dig::dig_cooldown,
+            systems::clamp::clamp.after(player::move_player),
+            systems::fade_out::fade_out,
+        ),
+    );
+
+    app.run();
 }
 
 fn camera_setup(mut commands: Commands) {

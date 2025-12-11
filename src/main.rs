@@ -6,6 +6,7 @@ mod grid;
 mod map;
 mod player;
 mod systems;
+mod game_timer;
 
 use bevy::prelude::*;
 
@@ -15,6 +16,9 @@ fn main() {
     // Plugins
     app.add_plugins(DefaultPlugins);
 
+    // Resources
+    app.insert_resource(game_timer::GameTimer::default());
+
     // Startup systems
     app.add_systems(
         Startup,
@@ -23,6 +27,7 @@ fn main() {
             map::setup,
             player::setup,
             diamond::setup.after(map::setup),
+            game_timer::setup_text
         ),
     );
 
@@ -38,6 +43,8 @@ fn main() {
             dig::dig_cooldown,
             systems::clamp::clamp.after(player::move_player),
             systems::fade_out::fade_out,
+            game_timer::update_timer,
+            game_timer::update_text,
         ),
     );
 

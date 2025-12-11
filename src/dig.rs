@@ -2,6 +2,11 @@ use crate::components::fade_out::FadeOut;
 use crate::player::{Player, PlayerConfig};
 use bevy::prelude::*;
 
+#[derive(Message)]
+pub struct DigEvent {
+    pub actor: Entity,
+    pub location: Vec3,
+}
 #[derive(Component)]
 pub struct DigCooldown {
     timer: Timer,
@@ -36,6 +41,7 @@ pub fn dig(
     asset_server: Res<AssetServer>,
     player_config: Res<PlayerConfig>,
     mut commands: Commands,
+    mut dig_message_writer: MessageWriter<DigEvent>,
     query: Query<(Entity, &mut Transform, Option<&DigCooldown>), With<Player>>,
 ) {
     let (entity, transform, cooldown) = query.single().unwrap();
@@ -48,6 +54,13 @@ pub fn dig(
             Transform::from_xyz(translation.x, translation.y, translation.z - 0.1),
         ));
 
-        commands.entity(entity).insert(DigCooldown::new(player_config.dig_cooldown));
+        commands
+            .entity(entity)
+            .insert(DigCooldown::new(player_config.dig_cooldown));
+
+        dig_message_writer.write(DigEvent {
+            actor: entity,
+            location: translation,
+        });
     }
 }

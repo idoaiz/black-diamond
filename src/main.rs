@@ -1,14 +1,22 @@
 mod components;
 mod diamond;
 mod dig;
+mod game_timer;
 #[cfg(feature = "debug-grid")]
 mod grid;
 mod map;
 mod player;
 mod systems;
-mod game_timer;
 
+use crate::dig::DigEvent;
 use bevy::prelude::*;
+
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash, Default)]
+enum GameState {
+    #[default]
+    Playing,
+    GameOver,
+}
 
 fn main() {
     let mut app = App::new();
@@ -16,8 +24,14 @@ fn main() {
     // Plugins
     app.add_plugins(DefaultPlugins);
 
+    // States
+    app.init_state::<GameState>();
+
     // Resources
     app.insert_resource(game_timer::GameTimer::default());
+
+    // Events
+    app.add_message::<DigEvent>();
 
     // Startup systems
     app.add_systems(
@@ -27,7 +41,7 @@ fn main() {
             map::setup,
             player::setup,
             diamond::setup.after(map::setup),
-            game_timer::setup_text
+            game_timer::setup_text,
         ),
     );
 
@@ -41,11 +55,13 @@ fn main() {
             player::move_player,
             dig::dig,
             dig::dig_cooldown,
+            diamond::detect_pickup,
             systems::clamp::clamp.after(player::move_player),
             systems::fade_out::fade_out,
             game_timer::update_timer,
             game_timer::update_text,
-        ),
+        )
+            .run_if(in_state(GameState::Playing)),
     );
 
     app.run();

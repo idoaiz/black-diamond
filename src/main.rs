@@ -7,6 +7,8 @@ mod grid;
 mod map;
 mod player;
 mod systems;
+mod animation;
+mod movement;
 
 use crate::dig::DigEvent;
 use bevy::prelude::*;
@@ -52,14 +54,17 @@ fn main() {
     app.add_systems(
         Update,
         (
-            player::move_player,
+            player::handle_input,
+            movement::move_players,
+            animation::animate,
             dig::dig,
             dig::dig_cooldown,
             diamond::detect_pickup,
-            systems::clamp::clamp.after(player::move_player),
+            systems::clamp::clamp.after(movement::move_players),
             systems::fade_out::fade_out,
             game_timer::update_timer,
             game_timer::update_text,
+            animation::animate,
         )
             .run_if(in_state(GameState::Playing)),
     );

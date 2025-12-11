@@ -37,7 +37,7 @@ pub fn detect_pickup(
     diamond_query: Query<&Transform, With<Diamond>>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut game_timer: ResMut<GameTimer>,
+    game_timer: Res<GameTimer>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let diamond_location = diamond_query.single().unwrap().translation;

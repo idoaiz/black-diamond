@@ -56,7 +56,7 @@ pub fn dig(
 
         commands
             .entity(entity)
-            .insert(DigCooldown::new(player_config.dig_cooldown));
+            .insert(DigCooldown::new(player_config.general.dig_cooldown));
 
         dig_message_writer.write(DigEvent {
             actor: entity,

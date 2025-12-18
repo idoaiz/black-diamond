@@ -6,7 +6,6 @@ pub struct Animation {
     pub frames: Vec<usize>,
     pub current_frame_idx: usize,
     pub timer: Timer,
-    pub frame_time: f32,
 }
 
 impl Animation {
@@ -15,7 +14,6 @@ impl Animation {
             frames,
             current_frame_idx: 0,
             timer: Timer::from_seconds(frame_time, TimerMode::Repeating),
-            frame_time,
         }
     }
 

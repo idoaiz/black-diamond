@@ -1,2 +1,14 @@
+[general]
 speed = 200.0
 dig_cooldown = 0.5
+
+[animation]
+walk_up    = [69, 68, 70]
+walk_down  = [66, 65, 67]
+walk_left  = [95, 94, 96]
+walk_right = [92, 91, 93]
+
+idle_up    = [68]
+idle_down  = [65]
+idle_left  = [94]
+idle_right = [91]

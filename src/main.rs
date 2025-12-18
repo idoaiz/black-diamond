@@ -55,7 +55,8 @@ fn main() {
         Update,
         (
             player::handle_input,
-            movement::move_players,
+            player::set_animation.after(player::handle_input),
+            movement::move_players.after(player::set_animation),
             animation::animate,
             dig::dig,
             dig::dig_cooldown,

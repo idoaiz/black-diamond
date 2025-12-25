@@ -22,6 +22,7 @@ pub fn move_players(
     mut query: Query<(&mut Transform, &MoveDirection, &Speed), With<Player>>,
 ) {
     for (mut transform, direction, speed) in query.iter_mut() {
-        transform.translation += direction.to_vec3().normalize_or_zero() * speed.0 * time.delta_secs();
+        transform.translation +=
+            direction.to_vec3().normalize_or_zero() * speed.0 * time.delta_secs();
     }
 }

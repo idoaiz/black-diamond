@@ -1,3 +1,4 @@
+mod animation;
 mod components;
 mod diamond;
 mod dig;
@@ -5,10 +6,9 @@ mod game_timer;
 #[cfg(feature = "debug-grid")]
 mod grid;
 mod map;
+mod movement;
 mod player;
 mod systems;
-mod animation;
-mod movement;
 
 use crate::dig::DigEvent;
 use bevy::prelude::*;

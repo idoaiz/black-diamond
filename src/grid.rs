@@ -10,23 +10,14 @@ pub fn setup(mut commands: Commands, window_query: Query<&Window>) {
 
     let mut x = 0.;
     while x <= (width / 2.) {
-        commands.spawn((
-            vertical_gridline(height),
-            Transform::from_xyz(x, 0.0, 1.0),
-        ));
-        commands.spawn((
-            vertical_gridline(height),
-            Transform::from_xyz(-x, 0.0, 1.0),
-        ));
+        commands.spawn((vertical_gridline(height), Transform::from_xyz(x, 0.0, 1.0)));
+        commands.spawn((vertical_gridline(height), Transform::from_xyz(-x, 0.0, 1.0)));
         x += GRID_SPACING_X as f32;
     }
 
     let mut y = 0.;
     while y <= (height / 2.) {
-        commands.spawn((
-            horizontal_gridline(width),
-            Transform::from_xyz(0.0, y, 1.0),
-        ));
+        commands.spawn((horizontal_gridline(width), Transform::from_xyz(0.0, y, 1.0)));
         commands.spawn((
             horizontal_gridline(width),
             Transform::from_xyz(0.0, -y, 1.0),
